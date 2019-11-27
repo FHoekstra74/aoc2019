@@ -1,0 +1,5 @@
+#!/bin/bash
+token=$( cat session.user)
+#echo $token
+
+curl --cookie "session=$token" https://adventofcode.com/2019/day/$1/input
