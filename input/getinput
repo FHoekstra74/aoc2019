@@ -1,5 +1,10 @@
 #!/bin/bash
-token=$( cat session.user)
-#echo $token
-
-curl --cookie "session=$token" https://adventofcode.com/2019/day/$1/input
+if [ $# -eq 0 ]
+  then
+    echo "Provide day as argument"
+    exit
+fi
+token=$( cat aocsession.user )
+curl --cookie "session=$token" https://adventofcode.com/2019/day/$1/input -o day$1.txt
+echo 
+cat day$1.txt
