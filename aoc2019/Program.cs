@@ -8,11 +8,10 @@ namespace aoc2019
         static void Main(string[] args)
         {
             var watch = Stopwatch.StartNew();
-            day1.Go();
+            day2.Go();
             watch.Stop();
 
             Console.WriteLine("Time taken: {0} ms ({1} minutes)", watch.ElapsedMilliseconds, watch.Elapsed.Minutes);
-            //Console.ReadKey();
         }
     }
 }
