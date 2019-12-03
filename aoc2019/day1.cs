@@ -11,7 +11,11 @@ namespace aoc2019
         public static void Go()
         {
             var values = File.ReadAllLines(@"c:\github\aoc2019\input\day1.txt").Select(line => int.Parse(line));
-            int resultA = 0;
+
+            Console.WriteLine(values.Select(val => Fuel(val)).Sum());
+            Console.WriteLine(values.Select(val => TotalFuel(val)).Sum());
+
+/*            int resultA = 0;
             int resultB = 0;
             foreach (int i in values)
             {
@@ -19,7 +23,7 @@ namespace aoc2019
                 resultB += TotalFuel(i);
             }
             Console.WriteLine(resultA.ToString());
-            Console.WriteLine(resultB.ToString());
+            Console.WriteLine(resultB.ToString()); */
         }
 
         private static int TotalFuel(int mass)
