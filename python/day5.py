@@ -9,7 +9,7 @@ def run(nums,input):
         if opcode == 1: nums[nums[pointer + 3]] = par1 + par2
         elif opcode == 2: nums[nums[pointer + 3]] = par1 * par2
         elif opcode == 3: nums[nums[pointer + 1]] = input
-        elif opcode == 4: print(par1)
+        elif opcode == 4 and par1 > 0: return(par1)
         elif opcode == 5: pointer=par2 if par1 != 0 else pointer+3
         elif opcode == 6: pointer=par2 if par1 == 0 else pointer+3
         elif opcode == 7: nums[nums[pointer + 3]] = 1 if par1 < par2 else 0
@@ -17,7 +17,5 @@ def run(nums,input):
         if opcode in [1,2,7,8]: pointer+=4
         elif opcode in [3,4]: pointer+=2
 nums = [int(n) for n in open("..\input\day5.txt", "r").read().split(',')]
-print ("AnswerA:") 
-run(nums.copy(),1)
-print ("AnswerB:")
-run(nums,5)
+print ("AnswerA: ", run(nums.copy(),1))
+print ("AnswerB: ", run(nums,5))
