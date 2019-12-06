@@ -3,9 +3,8 @@ def run(nums,input):
     while opcode < 99:
         t=f"{nums[pointer]:05}"
         opcode,b,c=int(t[3:]),int(t[1]),int(t[2])
-        if opcode < 9: 
-            par1 = nums[nums[pointer + 1]] if c == 0 else nums[pointer + 1]
-            if opcode != 4: par2 = nums[nums[pointer + 2]] if b == 0 else nums[pointer + 2]
+        if opcode != 3: par1 = nums[nums[pointer + 1]] if c == 0 else nums[pointer + 1]
+        if opcode != 4 and opcode != 3: par2 = nums[nums[pointer + 2]] if b == 0 else nums[pointer + 2]
         if opcode == 1: nums[nums[pointer + 3]] = par1 + par2
         elif opcode == 2: nums[nums[pointer + 3]] = par1 * par2
         elif opcode == 3: nums[nums[pointer + 1]] = input
