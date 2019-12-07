@@ -16,16 +16,15 @@ namespace aoc2019
             int highestB = int.MinValue;
             for (int j = 0; j < 100000; j++)
             {
-                string s = j.ToString().PadLeft(5,'0');
-                if (isvalid(s,new char[] {'0','1','2','3','4'}))
+                string s = j.ToString().PadLeft(5, '0');
+                if (isvalid(s, new char[] { '0', '1', '2', '3', '4' }))
                 {
-                    char[] inputs = s.ToCharArray();
                     int prev = 0;
-                    foreach (char i in inputs)
+                    for (int i = 0; i < 5; i++)
                     {
                         Queue inputst = new Queue();
                         Queue tmp = new Queue();
-                        inputst.Enqueue(Convert.ToInt16(i - '0'));
+                        inputst.Enqueue(Convert.ToInt16(s[i] - '0'));
                         inputst.Enqueue(prev);
                         int pointer = 0;
                         prev = run(new List<int>(items), inputst, tmp, ref pointer);
@@ -35,25 +34,26 @@ namespace aoc2019
                 }
                 if (isvalid(s, new char[] { '5', '6', '7', '8', '9' }))
                 {
-                    char[] inputs = s.ToCharArray();
                     List<int>[] ic = new List<int>[5];
                     Queue[] inputq = new Queue[5];
                     int[] pointers = new int[] { 0, 0, 0, 0, 0 };
-                    for (int k = 0; k < 5; k++)
+                    for (int i = 0; i < 5; i++)
                     {
-                        ic[k] = new List<int>(items);
-                        inputq[k] = new Queue();
-                        inputq[k].Enqueue(Convert.ToInt16(inputs[k] - '0'));
+                        ic[i] = new List<int>(items);
+                        inputq[i] = new Queue();
+                        inputq[i].Enqueue(Convert.ToInt16(s[i] - '0'));
                     }
                     inputq[0].Enqueue(0);
                     int lastoutput = 0;
                     while (lastoutput != int.MinValue)
                     {
-                        run(ic[0], inputq[0], inputq[1], ref pointers[0]);
-                        run(ic[1], inputq[1], inputq[2], ref pointers[1]);
-                        run(ic[2], inputq[2], inputq[3], ref pointers[2]);
-                        run(ic[3], inputq[3], inputq[4], ref pointers[3]);
-                        lastoutput = run(ic[4], inputq[4], inputq[0], ref pointers[4]);
+                        for (int i = 0; i < 5; i++)
+                        {
+                            if (i < 4)
+                                lastoutput = run(ic[i], inputq[i], inputq[i + 1], ref pointers[i]);
+                            else
+                                lastoutput = run(ic[i], inputq[i], inputq[0], ref pointers[i]);
+                        }
                     }
                     int res = Convert.ToInt32(inputq[0].Dequeue());
                     if (res > highestB)
@@ -91,7 +91,7 @@ namespace aoc2019
         }
         private static int run(List<int> items, Queue inputs, Queue results, ref int pointer)
         {
-            int  param1, param2, steps;
+            int param1, param2, steps;
             param1 = param2 = steps = 0;
             while (true)
             {
