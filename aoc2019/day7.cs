@@ -10,10 +10,13 @@ namespace aoc2019
     {
         public static void Go()
         {
-            string input = File.ReadLines(@"c:\github\aoc2019\input\day7.txt").First();
+            string input = File.ReadLines(@"c:\github\aoc2019\input\day7a.txt").First();
             List<int> items = input.Split(',').Select(Int32.Parse).ToList();
             int highestA = int.MinValue;
             int highestB = int.MinValue;
+            string codeA = string.Empty;
+            string codeB = string.Empty;
+
             for (int j = 0; j < 100000; j++)
             {
                 string s = j.ToString().PadLeft(5, '0');
@@ -27,10 +30,14 @@ namespace aoc2019
                         inputst.Enqueue(Convert.ToInt16(s[i] - '0'));
                         inputst.Enqueue(prev);
                         int pointer = 0;
+
                         prev = run(new List<int>(items), inputst, tmp, ref pointer);
                     }
                     if (prev > highestA)
+                    {
+                        codeA = s;
                         highestA = prev;
+                    }
                 }
                 if (isvalid(s, new char[] { '5', '6', '7', '8', '9' }))
                 {
@@ -57,11 +64,112 @@ namespace aoc2019
                     }
                     int res = Convert.ToInt32(inputq[0].Dequeue());
                     if (res > highestB)
+                    {
                         highestB = res;
+                        codeB = s;
+                    }
                 }
             }
-            Console.WriteLine(string.Format("AnswerA: {0}", highestA));
-            Console.WriteLine(string.Format("AnswerB: {0}", highestB));
+            Console.WriteLine(string.Format("AnswerA: {0} (phase setting sequence: {1})", highestA.ToString().PadLeft(9, ' '), codeA));
+            Console.WriteLine(string.Format("AnswerB: {0} (phase setting sequence: {1})", highestB.ToString().PadLeft(9, ' '), codeB));
+
+            if (1 == 1)
+            {
+                Console.WriteLine("");
+                Console.WriteLine("Part I:");
+                Console.WriteLine(("A-" + codeA[0]).PadLeft(10, ' ') + ("B-" + codeA[1]).PadLeft(14, ' ') + ("C-" + codeA[2]).PadLeft(14, ' ') + ("D-" + codeA[3]).PadLeft(14, ' ') + ("E-" + codeA[4]).PadLeft(14, ' '));
+                int prev = 0;
+                string o = "";
+                for (int i = 0; i < 5; i++)
+                {
+                    Queue inputst = new Queue();
+                    Queue tmp = new Queue();
+                    inputst.Enqueue(Convert.ToInt16(codeA[i] - '0'));
+                    inputst.Enqueue(prev);
+                    int pointer = 0;
+
+                    prev = run(new List<int>(items), inputst, tmp, ref pointer);
+                    if (o.Length > 0)
+                        o += " -> ";
+                    else
+                    {
+                        o = "0 ->";
+                    }
+                    if (i == 0)
+                    {
+                        o += prev.ToString().PadLeft(6, ' ');
+                    }
+                    else
+                    {
+                        if (prev != int.MinValue)
+                            o += prev.ToString().PadLeft(10, ' ');
+                        else
+                            o += "STOP".PadLeft(10, ' ');
+                    }
+                }
+                Console.WriteLine(o);
+                Console.WriteLine("");
+
+                Console.WriteLine("Part II:");
+                Console.WriteLine(("A-" + codeB[0]).PadLeft(10, ' ') + ("B-" + codeB[1]).PadLeft(14, ' ') + ("C-" + codeB[2]).PadLeft(14, ' ') + ("D-" + codeB[3]).PadLeft(14, ' ') + ("E-" + codeB[4]).PadLeft(14, ' '));
+
+
+
+                List<int>[] ic = new List<int>[5];
+                Queue[] inputq = new Queue[5];
+                int[] pointers = new int[] { 0, 0, 0, 0, 0 };
+                for (int i = 0; i < 5; i++)
+                {
+                    ic[i] = new List<int>(items);
+                    inputq[i] = new Queue();
+                    inputq[i].Enqueue(Convert.ToInt16(codeB[i] - '0'));
+                }
+                inputq[0].Enqueue(0);
+                int lastoutput = 0;
+                int loop = 0;
+                int x = 0;
+                while (lastoutput != int.MinValue)
+                {
+                    o = "";
+                    for (int i = 0; i < 5; i++)
+                    {
+                        if (i < 4)
+                            lastoutput = run(ic[i], inputq[i], inputq[i + 1], ref pointers[i]);
+                        else
+                            lastoutput = run(ic[i], inputq[i], inputq[0], ref pointers[i]);
+                        if (o.Length > 0)
+                        {
+                            if (lastoutput != int.MinValue)
+                                o += " -> ";
+                            else
+                                o += "    ";
+                        }
+                        else
+                        {
+                            if (loop == 0)
+                            {
+                                o = "0 ->";
+                            }
+                        }
+                        if (x == 0)
+                        {
+                            o += lastoutput.ToString().PadLeft(6, ' ');
+                            x = 1;
+                        }
+                        else
+                        {
+                            if (lastoutput != int.MinValue)
+                                o += lastoutput.ToString().PadLeft(10, ' ');
+                            else
+                                o += "STOP".PadLeft(10, ' ');
+                        }
+                    }
+                    loop++;
+                    Console.WriteLine(o);
+                }
+            }
+            Console.WriteLine("");
+
         }
 
         private static bool isvalid(string input, char[] validvalues)
