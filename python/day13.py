@@ -34,7 +34,5 @@ while res!=-99999:
         if tile == 2: resA += 1
         elif tile == 3: curx = x 
         elif tile == 4: balx = x
-    if balx>curx: inputq.put(1)
-    elif balx<curx: inputq.put(-1)
-    else: inputq.put(0)
+    inputq.put(1 if balx > curx else -1 if balx < curx else 0)
 print("AnswerA:",resA,"\nAnswerB:",score)
