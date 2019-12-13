@@ -24,20 +24,17 @@ def run(nums,input,output,pointer,pointer2):
         elif opcode in [4,3,9]: pointer[0]+=2
     return(-99999)
 nums = [int(n) for n in open("..\input\day13.txt", "r").read().split(',')]
-pointer, pointer2, resA, balx, score,inputq,outputq,ddnums = [0],[0],0,0,0,queue.SimpleQueue(),queue.SimpleQueue(),defaultdict(int)
-for i in range(len(nums)): ddnums[i] = nums[i]
-ddnums[0]=2
-while True:
+pointer, pointer2, resA, balx, score,inputq,outputq,ddnums,res = [0],[0],0,0,0,queue.SimpleQueue(),queue.SimpleQueue(),defaultdict(int),0
+for i in range(len(nums)): ddnums[i] = nums[i] if i > 0 else 2
+while res!=-99999:
     res=run(ddnums,inputq,outputq,pointer,pointer2)
     while not outputq.empty():
-        x,y,tile=outputq.get(),outputq.get(),outputq.get()
-        if x==-1 and y==0: score=tile
-        if tile==2: resA+=1
-        elif tile==3: curx=x
-        elif tile==4: balx=x
+        x, y, tile = outputq.get(),outputq.get(),outputq.get()
+        if x == -1 and y == 0: score = tile
+        if tile == 2: resA += 1
+        elif tile == 3: curx = x 
+        elif tile == 4: balx = x
     if balx>curx: inputq.put(1)
     elif balx<curx: inputq.put(-1)
     else: inputq.put(0)
-    if res == -99999: break
-print("AnswerA:",resA)
-print("AnswerB:",score)
+print("AnswerA:",resA,"\nAnswerB:",score)
