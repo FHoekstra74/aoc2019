@@ -27,10 +27,9 @@ def run(nums,input,output,pointer):
 nums,highest = [int(n) for n in open("..\input\day7.txt", "r").read().split(',')], [0] * 2
 for j in range(0,100000):
     if valid(f"{j:05}",[0,1,2,3,4]) or valid(f"{j:05}",[5,6,7,8,9]):
-        q,c,p,res=[],[],[],0
+        q,c,p,res=[] ,[nums.copy()] * 5 ,[] ,0
         for i in range (5): q.append(queue.Queue(maxsize=20))
         for i in range (5): q[i].put(int(f"{j:05}"[i]))
-        for i in range (5): c.append(nums.copy())
         for i in range (5): p.append([0])
         q[0].put(0)
         while res !=-99999 or (j<5000 and res==0): 
