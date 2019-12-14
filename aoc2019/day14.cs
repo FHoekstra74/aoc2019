@@ -27,30 +27,25 @@ namespace aoc2019
             }
 
             Console.WriteLine(string.Format("AnswerA: {0}", neededore(1, reactions)));
-
-            int high = 10000000;
-            int low = 1;
-            int loopcount = 0;
+            int low = 0;
+            int high = 1;
+            long target = 1000000000000;
+            while (neededore(high, reactions) < target)
+            {
+                low = high;
+                high *= 2;
+            }
             int mid;
-            bool oncetoohigh = false;
             while (Math.Abs(high-low)>1)
             {
                 mid = (high + low) / 2;
-                loopcount++;
                 long needed = neededore(mid, reactions);
-            //    Console.WriteLine(string.Format("{0} -> {1} {2},{3}", mid, needed, low, high));
-                if (needed > 1000000000000)
-                {
-                    oncetoohigh = true;
+                if (needed > target)
                     high = mid;
-                }
                 else
                     low = mid;
             }
-            if (!oncetoohigh)
-                Console.WriteLine("Start at higher max!");
-            else
-                Console.WriteLine(string.Format("AnswerB: {0} in {1} steps", low, loopcount));
+            Console.WriteLine(string.Format("AnswerB: {0}", low));
         }
 
         private static long neededore(int fuel, List<reactrion> reactions)
