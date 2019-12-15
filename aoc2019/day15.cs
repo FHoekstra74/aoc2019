@@ -22,20 +22,25 @@ namespace aoc2019
 
             Dictionary<Point, int> map = new Dictionary<Point, int>();
             map.Add(new Point(0, 0), 1);
-            int x = 0;
-            int y = 0;
             int stepcount = 0;
+            int answerA = 0;
 
-            handlepoint( x,  y, map, items, ref pointer, ref pointer2, ref stepcount);
-       //     printmap(map);
+            Console.WindowHeight = 52;
+            Console.WindowWidth = 60;
+            Console.CursorVisible = false;
 
+            handlepoint( 0,  0, map, items, ref pointer, ref pointer2, ref stepcount, ref answerA);
+
+            int minx = map.Keys.Min(point => point.X);
+            int miny = map.Keys.Min(point => point.X);
+            printmap(map, minx, miny);
+
+            bool stop = false;
+            int AnswerB = 0;
             Point oxygen = map.FirstOrDefault(x => x.Value == 2).Key;
             List<Point> testB = new List<Point>();
             testB.Add(new Point(oxygen.X, oxygen.Y));
             map[new Point(oxygen.X, oxygen.Y)] = 3;
-
-            bool stop = false;
-            int AnswerB = 0;
             while (!stop)
             {
                 List<Point> temp = new List<Point>();
@@ -45,8 +50,12 @@ namespace aoc2019
                     foreach(Point p2 in tocheck)
                     {
                         if (map.ContainsKey(p2))
-                            if (map[p2] == 1)
+                            if (map[p2] == 1 || map[p2] == 4)
                             {
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                Console.SetCursorPosition(p2.X -minx , p2.Y -miny);
+                                Console.Write('B');
+                                System.Threading.Thread.Sleep(10);
                                 map[p2] = 3;
                                 temp.Add(p2);
                             }
@@ -57,10 +66,14 @@ namespace aoc2019
                     testB.Add(new Point(p.X, p.Y));
                 AnswerB++;
             }
+
+            Console.SetCursorPosition(0, 42);
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine(string.Format("AnswerA: {0}", answerA));
             Console.WriteLine(string.Format("AnswerB: {0}", AnswerB-1));
         }
 
-        private static void printmap(Dictionary<Point, int> map)
+        private static void printmap(Dictionary<Point, int> map, int minx, int miny)
         {
             for (int y = map.Keys.Min(point => point.Y); y <= map.Keys.Max(point => point.Y); y++)
             {
@@ -85,9 +98,38 @@ namespace aoc2019
                 }
                 Console.WriteLine(line);
             }
+
+            List<Point> testB = new List<Point>();
+            testB.Add(new Point(0, 0));
+            bool stop = false;
+            while (!stop)
+            {
+                List<Point> temp = new List<Point>();
+                foreach (Point p in testB)
+                {
+                    Point[] tocheck = new Point[] { new Point(p.X, p.Y - 1), new Point(p.X, p.Y + 1), new Point(p.X - 1, p.Y), new Point(p.X + 1, p.Y) };
+                    foreach (Point p2 in tocheck)
+                    {
+                        if (map.ContainsKey(p2))
+                            if (map[p2] == 2)
+                                stop = true;
+                        if (map[p2] == 1)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Blue;
+                            Console.SetCursorPosition(p2.X -minx, p2.Y -miny);
+                            Console.Write('A');
+                            map[p2] = 4;
+                            temp.Add(p2);
+                            System.Threading.Thread.Sleep(10);
+                        }
+                    }
+                }
+                foreach (Point p in temp)
+                    testB.Add(new Point(p.X, p.Y));
+            }
         }
 
-        private static void handlepoint( int x,  int y, Dictionary<Point, int> map, Dictionary<long, long> items, ref long pointer, ref long pointer2, ref int stepcount )
+        private static void handlepoint( int x,  int y, Dictionary<Point, int> map, Dictionary<long, long> items, ref long pointer, ref long pointer2, ref int stepcount,ref int answerA )
         {
             Queue inputq = new Queue();
             Queue outputq = new Queue();
@@ -111,9 +153,9 @@ namespace aoc2019
                     map.Add(tocheck[t-1], res);
 
                     if (res == 1)
-                        handlepoint(tocheck[t - 1].X, tocheck[t - 1].Y, map, items, ref pointer, ref pointer2, ref stepcount);
+                        handlepoint(tocheck[t - 1].X, tocheck[t - 1].Y, map, items, ref pointer, ref pointer2, ref stepcount, ref answerA);
                     if (res == 2)
-                        Console.WriteLine(string.Format("AnswerA: {0}",stepcount));
+                        answerA = stepcount;
 
                     //Recursion is a bitch.... put state back:
                     items = new Dictionary<long, long>(copy);
