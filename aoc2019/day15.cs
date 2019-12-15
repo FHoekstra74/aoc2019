@@ -20,60 +20,82 @@ namespace aoc2019
             long pointer = 0;
             long pointer2 = 0;
 
-            Dictionary<Point, int> map = new Dictionary<Point, int>();
-            map.Add(new Point(0, 0), 1);
-            int stepcount = 0;
-            int answerA = 0;
+            Dictionary<Point, pointvalue> map = new Dictionary<Point, pointvalue>();
+            map.Add(new Point(0,0), new  pointvalue(int.MinValue, int.MinValue, 1));
 
             Console.WindowHeight = 52;
             Console.WindowWidth = 60;
             Console.CursorVisible = false;
 
-            handlepoint( 0,  0, map, items, ref pointer, ref pointer2, ref stepcount, ref answerA);
+            handlepoint(0, 0, map, items, ref pointer, ref pointer2);
 
             int minx = map.Keys.Min(point => point.X);
             int miny = map.Keys.Min(point => point.X);
             printmap(map, minx, miny);
 
+            Console.SetCursorPosition(0, 42);
+            Console.WriteLine("Press key to continue");
+            Console.ReadKey();
+
+            Point oxygen = map.FirstOrDefault(x => x.Value.res == 2).Key;
+            Point end = oxygen;
+            List<Point> route = new List<Point>();
+            while (map[end].parent.X > int.MinValue)
+            {
+                route.Add(map[end].parent);
+                end = map[end].parent;
+            }
+
+            route.Reverse();
+            foreach (Point p in route)
+            {
+                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.SetCursorPosition(p.X - minx, p.Y - miny);
+                Console.Write('#');
+                System.Threading.Thread.Sleep(10);
+            }
+
             bool stop = false;
             int AnswerB = 0;
-            Point oxygen = map.FirstOrDefault(x => x.Value == 2).Key;
             List<Point> testB = new List<Point>();
             testB.Add(new Point(oxygen.X, oxygen.Y));
-            map[new Point(oxygen.X, oxygen.Y)] = 3;
+            map[new Point(oxygen.X, oxygen.Y)].res = 3;
             while (!stop)
             {
                 List<Point> temp = new List<Point>();
                 foreach (Point p in testB)
                 {
                     Point[] tocheck = new Point[] { new Point(p.X, p.Y - 1), new Point(p.X, p.Y + 1), new Point(p.X - 1, p.Y), new Point(p.X + 1, p.Y) };
-                    foreach(Point p2 in tocheck)
+                    foreach (Point p2 in tocheck)
                     {
                         if (map.ContainsKey(p2))
-                            if (map[p2] == 1 || map[p2] == 4)
+                            if (map[p2].res == 1)
                             {
                                 Console.ForegroundColor = ConsoleColor.Green;
-                                Console.SetCursorPosition(p2.X -minx , p2.Y -miny);
-                                Console.Write('B');
+                                Console.SetCursorPosition(p2.X - minx, p2.Y - miny);
+                                Console.Write('#');
                                 System.Threading.Thread.Sleep(10);
-                                map[p2] = 3;
+                                map[p2].res = 3;
                                 temp.Add(p2);
                             }
                     }
                 }
                 stop = temp.Count == 0;
-                foreach(Point p in temp)
-                    testB.Add(new Point(p.X, p.Y));
-                AnswerB++;
+                if (!stop)
+                {
+                    foreach (Point p in temp)
+                        testB.Add(new Point(p.X, p.Y));
+                    AnswerB++;
+                } 
             }
 
-            Console.SetCursorPosition(0, 42);
+            Console.SetCursorPosition(0, 43);
             Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine(string.Format("AnswerA: {0}", answerA));
-            Console.WriteLine(string.Format("AnswerB: {0}", AnswerB-1));
+            Console.WriteLine(string.Format("AnswerA: {0}" ,route.Count));
+            Console.WriteLine(string.Format("AnswerB: {0}", AnswerB));
         }
 
-        private static void printmap(Dictionary<Point, int> map, int minx, int miny)
+        private static void printmap(Dictionary<Point, pointvalue> map, int minx, int miny)
         {
             for (int y = map.Keys.Min(point => point.Y); y <= map.Keys.Max(point => point.Y); y++)
             {
@@ -84,13 +106,13 @@ namespace aoc2019
                     char c = ' ';
                     if (map.ContainsKey(newpoint))
                     {
-                        int colo = map[newpoint];
+                        int colo = map[newpoint].res;
                         if (colo == 0)
-                            c = '#';
+                            c = ' ';
                         if (colo == 1)
-                            c = '.';
+                            c = ' ';
                         if (colo == 2)
-                            c = 'X';
+                            c = 'O';
                         if (x == 0 && y == 0)
                             c = 'S';
                     }
@@ -98,73 +120,46 @@ namespace aoc2019
                 }
                 Console.WriteLine(line);
             }
-
-            List<Point> testB = new List<Point>();
-            testB.Add(new Point(0, 0));
-            bool stop = false;
-            while (!stop)
-            {
-                List<Point> temp = new List<Point>();
-                foreach (Point p in testB)
-                {
-                    Point[] tocheck = new Point[] { new Point(p.X, p.Y - 1), new Point(p.X, p.Y + 1), new Point(p.X - 1, p.Y), new Point(p.X + 1, p.Y) };
-                    foreach (Point p2 in tocheck)
-                    {
-                        if (map.ContainsKey(p2))
-                            if (map[p2] == 2)
-                                stop = true;
-                        if (map[p2] == 1)
-                        {
-                            Console.ForegroundColor = ConsoleColor.Blue;
-                            Console.SetCursorPosition(p2.X -minx, p2.Y -miny);
-                            Console.Write('A');
-                            map[p2] = 4;
-                            temp.Add(p2);
-                            System.Threading.Thread.Sleep(10);
-                        }
-                    }
-                }
-                foreach (Point p in temp)
-                    testB.Add(new Point(p.X, p.Y));
-            }
         }
 
-        private static void handlepoint( int x,  int y, Dictionary<Point, int> map, Dictionary<long, long> items, ref long pointer, ref long pointer2, ref int stepcount,ref int answerA )
+        private static void handlepoint(int x, int y, Dictionary<Point, pointvalue> map, Dictionary<long, long> items, ref long pointer, ref long pointer2)
         {
             Queue inputq = new Queue();
             Queue outputq = new Queue();
-            stepcount += 1;
-
             Dictionary<long, long> copy = new Dictionary<long, long>(items);
             long pointerbackup = pointer;
             long pointer2backup = pointer2;
-            int xbackup = x;
-            int ybackup = y;
-            int stepcountbakcup = stepcount;
 
             Point[] tocheck = new Point[] { new Point(x, y - 1), new Point(x, y + 1), new Point(x - 1, y), new Point(x + 1, y) };
-            for (int t = 1; t<5; t++)
+            for (int t = 1; t < 5; t++)
             {
-                if (!map.ContainsKey(tocheck[t-1]))
+                if (!map.ContainsKey(tocheck[t - 1]))
                 {
                     inputq.Enqueue(t);
                     run(items, inputq, outputq, ref pointer, ref pointer2);
                     int res = Convert.ToInt16(outputq.Dequeue());
-                    map.Add(tocheck[t-1], res);
+                    map.Add(tocheck[t - 1],new pointvalue(x,y,res));
 
                     if (res == 1)
-                        handlepoint(tocheck[t - 1].X, tocheck[t - 1].Y, map, items, ref pointer, ref pointer2, ref stepcount, ref answerA);
-                    if (res == 2)
-                        answerA = stepcount;
+                        handlepoint(tocheck[t - 1].X, tocheck[t - 1].Y, map, items, ref pointer, ref pointer2);
 
                     //Recursion is a bitch.... put state back:
                     items = new Dictionary<long, long>(copy);
                     pointer = pointerbackup;
                     pointer2 = pointer2backup;
-                    x = xbackup;
-                    y = ybackup;
-                    stepcount = stepcountbakcup;
                 }
+            }
+        }
+
+        public class pointvalue
+        {
+            public Point parent;
+            public int res;
+
+            public pointvalue(int parentX, int parentY, int content)
+            {
+                parent = new Point(parentX, parentY);
+                res = content;
             }
         }
 
