@@ -33,7 +33,6 @@ namespace aoc2019
             long natx = 0;
             long naty = 0;
             long lastnaty = 0;
-            int itt = 0;
 
             while (!stop)
             {
@@ -52,10 +51,8 @@ namespace aoc2019
                         }
                         else
                         {
-                            long x = Convert.ToInt64(outputq[i].Dequeue());
-                            long y = Convert.ToInt64(outputq[i].Dequeue());
-                            inputq[a].Enqueue(x);
-                            inputq[a].Enqueue(y);
+                            inputq[a].Enqueue(outputq[i].Dequeue());
+                            inputq[a].Enqueue(outputq[i].Dequeue());
                         }
                     }
                 }
@@ -68,22 +65,19 @@ namespace aoc2019
                         idlecount++;
                     }
                 }
-                if (idlecount == nrcomputers && itt > 0)
+                if (idlecount == nrcomputers && naty > 0)
                 {
                     if (naty == lastnaty)
                     {
                         Console.WriteLine("AnswerB:" + naty);
                         stop = true;
-                        break;
                     }
                     inputq[0].Enqueue(natx);
                     inputq[0].Enqueue(naty);
                     lastnaty = naty;
                 }
-
                 for (int i = 0; i < nrcomputers; i++)
                     run(computers[i], inputq[i], outputq[i], ref pointer[i], ref pointer2[i]);
-                itt++;
             }
         }
 
@@ -174,6 +168,5 @@ namespace aoc2019
                     pointer += 2;
             }
         }
-
     }
 }
