@@ -77,7 +77,7 @@ namespace aoc2019
                 }
             }
 
-            w2.WriteLine("for i in range(0, 45):");
+            w2.WriteLine("for i in range(45):");
             foreach (Point p in points.Keys)
             {
                 Point[] tocheck = new Point[] { new Point(p.X, p.Y - 1), new Point(p.X, p.Y + 1), new Point(p.X - 1, p.Y), new Point(p.X + 1, p.Y) };
@@ -86,7 +86,7 @@ namespace aoc2019
                     if (points.ContainsKey(p2))
                     {
                         w.WriteLine(string.Format("maze.add_edge(({0}, {1}), ({2}, {3}))", p.X, p.Y, p2.X, p2.Y));
-                        w2.WriteLine(string.Format("\tmaze.add_edge(({0}, {1}, {4}), ({2}, {3}, {4}))", p.X, p.Y, p2.X, p2.Y,"i"));
+                        w2.WriteLine(string.Format("\tmaze.add_edge(({0}, {1}, {4}), ({2}, {3}, {4}))", p.X, p.Y, p2.X, p2.Y, "i"));
                     }
                 }
             }
@@ -96,15 +96,15 @@ namespace aoc2019
             int yminouter = points.Keys.Min(point => point.Y);
             int ymaxouter = points.Keys.Max(point => point.Y);
 
-            w2.WriteLine("for i in range(0, 44):");
+            w2.WriteLine("for i in range(44):");
             foreach (string s in specials.Keys)
             {
                 Point[] ps = specials[s];
                 if (ps[1] != new Point(0, 0))
                 {
                     w.WriteLine(string.Format("maze.add_edge(({0}, {1}), ({2}, {3}))", ps[0].X, ps[0].Y, ps[1].X, ps[1].Y));
-                    if (ps[0].X == xminouter || ps[0].X==xmaxouter || ps[0].Y==yminouter || ps[0].Y==ymaxouter)  
-                        w2.WriteLine(string.Format("\tmaze.add_edge(({0}, {1}, {4}), ({2}, {3}, {5})) # {6}", ps[0].X, ps[0].Y, ps[1].X, ps[1].Y, "i+1", "i",s));
+                    if (ps[0].X == xminouter || ps[0].X == xmaxouter || ps[0].Y == yminouter || ps[0].Y == ymaxouter)
+                        w2.WriteLine(string.Format("\tmaze.add_edge(({0}, {1}, {4}), ({2}, {3}, {5})) # {6}", ps[0].X, ps[0].Y, ps[1].X, ps[1].Y, "i+1", "i", s));
                     else
                         w2.WriteLine(string.Format("\tmaze.add_edge(({0}, {1}, {4}), ({2}, {3}, {5})) # {6}", ps[1].X, ps[1].Y, ps[0].X, ps[0].Y, "i+1", "i", s));
                 }
@@ -112,7 +112,7 @@ namespace aoc2019
 
             Point aa = specials["AA"][0];
             Point zz = specials["ZZ"][0];
-            w.WriteLine(string.Format("res = nx.shortest_path_length(maze,({0},{1}),({2},{3}))",  aa.X, aa.Y, zz.X, zz.Y));
+            w.WriteLine(string.Format("res = nx.shortest_path_length(maze,({0},{1}),({2},{3}))", aa.X, aa.Y, zz.X, zz.Y));
             w.WriteLine("print(res);");
             w.Close();
             w2.WriteLine(string.Format("res = nx.shortest_path_length(maze,({0},{1},0),({2},{3},0))", aa.X, aa.Y, zz.X, zz.Y));
